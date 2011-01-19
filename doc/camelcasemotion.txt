@@ -1,0 +1,183 @@
+*camelcasemotion.txt*   Motion through CamelCaseWords and underscore_notation. 
+
+		     CAMEL CASE MOTION    by Ingo Karkat
+							 *camelcasemotion.vim*
+description			|camelcasemotion-description|
+usage	    			|camelcasemotion-usage|
+installation   			|camelcasemotion-installation|
+configuration  			|camelcasemotion-configuration|
+known problems			|camelcasemotion-known-problems|
+todo				|camelcasemotion-todo|
+history				|camelcasemotion-history|
+
+==============================================================================
+DESCRIPTION					 *camelcasemotion-description*
+
+Vim provides many built-in motions, e.g. to move to the next word, or end of
+the current word. Most programming languages use either CamelCase
+("anIdentifier") or underscore_notation ("an_identifier") naming conventions
+for identifiers. The best way to navigate inside those identifiers using Vim
+built-in motions is the [count]f{char} motion, i.e. f{uppercase-char} or f_,
+respectively. But we can make this easier: 
+
+This script defines motions|,w|,|,b| and|,e|(similar to |w|,|b|,|e|), which do
+not move word-wise (forward/backward), but Camel-wise; i.e. to word boundaries
+and uppercase letters. The motions also work on underscore notation, where
+words are delimited by underscore ('_') characters. From here on, both
+CamelCase and underscore_notation entities are referred to as "words" (in
+double quotes). Just like with the regular motions, a [count] can be prepended
+to move over multiple "words" at once. Outside of "words" (e.g. in non-keyword
+characters like // or ;), the new motions move just like the regular motions. 
+
+Vim provides a built-in|iw|text object called 'inner word', which works in
+operator-pending and visual mode. Analog to that, this script defines inner
+"word" motions |i,w|,|i,b| and|i,e|, which select the "word" (or multiple
+"words" if a [count] is given) where the cursor is located. 
+
+==============================================================================
+USAGE						       *camelcasemotion-usage*
+								*,w* *,b* *,e*
+Use the new motions|,w|,|,b| and|,e| in normal mode, operator-pending mode
+(cp.|operator|), and visual mode. For example, type 'bc,w' to change 'Camel'
+in 'CamelCase' to something else. 
+
+
+EXAMPLE: motions
+Given the following CamelCase identifiers in a source code fragment:
+    set Script31337PathAndNameWithoutExtension11=%~dpn0 ~
+    set Script31337PathANDNameWITHOUTExtension11=%~dpn0 ~
+and the corresponding identifiers in underscore_notation:
+    set script_31337_path_and_name_without_extension_11=%~dpn0 ~
+    set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_11=%~dpn0 ~
+
+,w moves to ([x] is cursor position): [s]et, [s]cript, [3]1337, [p]ath,
+    [a]nd, [n]ame, [w]ithout, [e]xtension, [1]1, [d]pn0, dpn[0], [s]et
+,b moves to: [d]pn0, [1]1, [e]xtension, [w]ithout, ...
+,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
+    extensio[n], 1[1], dpn[0]
+
+
+EXAMPLE: inner motions
+Given the following identifier, with the cursor positioned at [x]:
+    script_31337_path_and_na[m]e_without_extension_11 ~
+
+v3i,w selects script_31337_path_and_[name_without_extension_]11
+v3i,b selects script_31337_[path_and_name]_without_extension_11
+v3i,e selects script_31337_path_and_[name_without_extension]_11
+Instead of visual mode, you can also use c3i,w to change, d3i,w to delete,
+gU3i,w to upper-case, and so on. 
+
+==============================================================================
+INSTALLATION					*camelcasemotion-installation*
+
+This script is packaged as a|vimball|. If you have the "gunzip" decompressor
+in your PATH, simply edit the *.vba.gz package in Vim; otherwise, decompress
+the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
+vimball or via the|:UseVimball|command. >
+    vim camelcasemotion.vba.gz
+    :so %
+To uninstall, use the|:RmVimball|command. 
+
+DEPENDENCIES					*camelcasemotion-dependencies*
+
+- Requires Vim 7.0 or higher. 
+
+==============================================================================
+CONFIGURATION				       *camelcasemotion-configuration*
+
+If you want to use different mappings, map your keys to the
+<Plug>CamelCaseMotion_? mapping targets _before_ sourcing this script (e.g. in
+your|vimrc|).  
+
+EXAMPLE: Replace the default|w|,|b| and|e| mappings instead of defining
+additional mappings|,w|,|,b| and|,e|: >
+    map <silent> w <Plug>CamelCaseMotion_w
+    map <silent> b <Plug>CamelCaseMotion_b
+    map <silent> e <Plug>CamelCaseMotion_e
+    sunmap w
+    sunmap b
+    sunmap e
+
+EXAMPLE: Replace default|iw|text-object and define|ib|and |ie|motions: >
+    omap <silent> iw <Plug>CamelCaseMotion_iw
+    xmap <silent> iw <Plug>CamelCaseMotion_iw
+    omap <silent> ib <Plug>CamelCaseMotion_ib
+    xmap <silent> ib <Plug>CamelCaseMotion_ib
+    omap <silent> ie <Plug>CamelCaseMotion_ie
+    xmap <silent> ie <Plug>CamelCaseMotion_ie
+
+==============================================================================
+KNOWN PROBLEMS				      *camelcasemotion-known-problems*
+
+- A degenerate CamelCaseWord containing '\U\u\d' (e.g. "MaP1Roblem") confuses
+  the operator-pending and visual mode ,e mapping if 'selection' is not set to
+  "exclusive". It'll skip "P" and select "P1" in one step. As a workaround,
+  use ',w' instead of ',e'; those two mappings have the same effect inside
+  CamelCaseWords, anyway. 
+- The operator-pending and visual mode ,e mapping doesn't work properly when
+  it reaches the end of the buffer; the final character of the moved-over
+  "word" remains. As a workaround, use the default 'e' motion instead of ',e'. 
+- When the Vim setting 'selection' is not set to "exclusive", a
+  forward-backward combination in visual mode (e.g. 'v,w,b') selects one
+  additional character to the left, instead of only the character where the
+  motion started. Likewise, extension of the visual selection from the front
+  end is off by one additional character. 
+
+==============================================================================
+TODO							*camelcasemotion-todo*
+
+==============================================================================
+HISTORY						     *camelcasemotion-history*
+
+1.50	05-May-2009
+- Do not create mappings for select mode; according to|Select-mode|, printable
+  character commands should delete the selection and insert the typed
+  characters. Now using :xmap to only target visual mode. 
+- Moved functions from plugin to separate autoload script. 
+- Split off documentation into separate help file. 
+
+1.40	30-Jun-2008
+BF: Now using :normal! to be independent from any user mappings. Thanks to
+Neil Walker for the patch.
+
+1.40	19-May-2008
+BF: Wrong forward motion stop at the second digit if a word starts with
+multiple numbers (e.g. 1234.56789). Thanks to Wasim Ahmed for reporting this.
+
+1.40	24-Apr-2008
+ENH: Added inner "word" text objects 'i,w' etc. that work analoguous to the
+built-in |iw| text object. Thanks to David Kotchan for this suggestion.
+
+1.30	20-Apr-2008
+The motions now also stop at non-keyword boundaries, just like the regular
+motions. This has no effect inside a CamelCaseWord or inside
+underscore_notation, but it makes the motions behave like the regular motions
+(which is important if you replace the default motions). Thanks to Mun Johl
+for reporting this. 
+
+1.30	09-Apr-2008
+- Allowing users to use mappings different than ,w ,b ,e by defining
+  <Plug>CamelCaseMotion_? target mappings. This can even be used to replace
+  the default 'w', 'b' and 'e' mappings, as suggested by Mun Johl.
+- Now requires VIM 7.0 or higher. 
+
+1.20	29-May-2007
+ENH: The visual mode motions now also (mostly) work with the (default) setting
+'set selection=inclusive', instead of selecting one character too much. 
+
+1.10	28-May-2007
+Incorporated major improvements and simplifications done by Joseph Barker. 
+
+1.00	22-May-2007
+First published version. 
+
+0.01	11-Oct-2005
+Started development based on vimtip #1016 by Anthony Van Ham. 
+
+==============================================================================
+Copyright: (C) 2007-2009 by Ingo Karkat
+The VIM LICENSE applies to this script; see|copyright|. 
+
+Maintainer:	Ingo Karkat <ingo@karkat.de>
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:
