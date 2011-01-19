@@ -32,7 +32,7 @@ function! s:Move( direction, count, mode )
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    " end of ...
 	    " number | ACRONYM followed by CamelCase or number | CamelCase | underscore_notation | non-keyword | word
-	    call search( '\d\+\|\u\+\ze\%(\u\l\|\d\)\|\u\l\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\%(_\@!\k\)\+\>', 'We' )
+	    call search( '\d\+\|\u\+\ze\%(\u\l\|\d\)\|\l\+\ze\%(\u\|\d\)\|\u\l\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\%(_\@!\k\)\+\>', 'We' )
 	    " Note: word must be defined as '\k\>'; '\>' on its own somehow
 	    " dominates over the previous branch. Plus, \k must exclude the
 	    " underscore, or a trailing one will be incorrectly moved over:
