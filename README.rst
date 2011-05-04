@@ -95,6 +95,12 @@ If you want to use different mappings, map your keys to the
 ``<Plug>CamelCaseMotion_?`` mapping targets _before_ sourcing this script (e.g. in
 your .vimrc).
 
+**Example**: Use 'W', 'B' and 'E'::
+
+    map <S-W> <Plug>CamelCaseMotion_w
+    map <S-B> <Plug>CamelCaseMotion_b
+    map <S-E> <Plug>CamelCaseMotion_e
+
 **Example**: Replace the default 'w', 'b' and 'e' mappings instead of defining
 additional mappings',w', ',b' and ',e'::
 
