@@ -29,7 +29,7 @@ operator-pending and visual mode. Analog to that, this script defines inner
 
 Usage
 ======
-Use the new motions',w',',b' and ',e' in normal mode, operator-pending mode (cp.
+Use the new motions ',w', ',b' and ',e' in normal mode, operator-pending mode (cp.
 :help operator), and visual mode. For example, type 'bc,w' to change 'Camel' in
 'CamelCase' to something else.
 
@@ -102,7 +102,7 @@ your .vimrc).
     map <S-E> <Plug>CamelCaseMotion_e
 
 **Example**: Replace the default 'w', 'b' and 'e' mappings instead of defining
-additional mappings',w', ',b' and ',e'::
+additional mappings ',w', ',b' and ',e'::
 
     map <silent> w <Plug>CamelCaseMotion_w
     map <silent> b <Plug>CamelCaseMotion_b
