@@ -20,26 +20,27 @@ for identifiers. The best way to navigate inside those identifiers using Vim
 built-in motions is the [count]f{char} motion, i.e. f{uppercase-char} or f_,
 respectively. But we can make this easier: 
 
-This script defines motions|,w|,|,b| and|,e|(similar to |w|,|b|,|e|), which do
-not move word-wise (forward/backward), but Camel-wise; i.e. to word boundaries
-and uppercase letters. The motions also work on underscore notation, where
-words are delimited by underscore ('_') characters. From here on, both
-CamelCase and underscore_notation entities are referred to as "words" (in
-double quotes). Just like with the regular motions, a [count] can be prepended
-to move over multiple "words" at once. Outside of "words" (e.g. in non-keyword
-characters like // or ;), the new motions move just like the regular motions. 
+This script defines motions |,w|, |,b| and |,e| (similar to |w|, |b|, |e|),
+which do not move word-wise (forward/backward), but Camel-wise; i.e.  to
+word boundaries and uppercase letters. The motions also work on underscore
+notation, where words are delimited by underscore ('_') characters. From
+here on, both CamelCase and underscore_notation entities are referred to as
+"words" (in double quotes). Just like with the regular motions, a [count]
+can be prepended to move over multiple "words" at once. Outside of "words"
+(e.g. in non-keyword characters like // or ;), the new motions move just
+like the regular motions. 
 
-Vim provides a built-in|iw|text object called 'inner word', which works in
-operator-pending and visual mode. Analog to that, this script defines inner
-"word" motions |i,w|,|i,b| and|i,e|, which select the "word" (or multiple
-"words" if a [count] is given) where the cursor is located. 
+Vim provides a built-in |iw| text object called 'inner word', which works in
+operator-pending and visual mode. Analoguous to that, this script defines
+inner "word" motions |i,w|, |i,b| and |i,e|, which select the "word" (or
+multiple "words" if a [count] is given) where the cursor is located. 
 
 ==============================================================================
 USAGE						       *camelcasemotion-usage*
 								*,w* *,b* *,e*
-Use the new motions|,w|,|,b| and|,e| in normal mode, operator-pending mode
-(cp.|operator|), and visual mode. For example, type 'bc,w' to change 'Camel'
-in 'CamelCase' to something else. 
+Use the new motions |,w|, |,b| and |,e| in normal mode, operator-pending
+mode (cf. |operator|), and visual mode. For example, if the cursor is on the
+'m', type 'bc,w' to change 'Camel' in 'CamelCase' to something else. 
 
 
 EXAMPLE: motions
@@ -70,13 +71,13 @@ gU3i,w to upper-case, and so on.
 ==============================================================================
 INSTALLATION					*camelcasemotion-installation*
 
-This script is packaged as a|vimball|. If you have the "gunzip" decompressor
+This script is packaged as a |vimball|. If you have the "gunzip" decompressor
 in your PATH, simply edit the *.vba.gz package in Vim; otherwise, decompress
 the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
-vimball or via the|:UseVimball|command. >
+vimball or via the |:UseVimball| command. >
     vim camelcasemotion.vba.gz
     :so %
-To uninstall, use the|:RmVimball|command. 
+To uninstall, use the |:RmVimball| command. 
 
 DEPENDENCIES					*camelcasemotion-dependencies*
 
@@ -87,10 +88,10 @@ CONFIGURATION				       *camelcasemotion-configuration*
 
 If you want to use different mappings, map your keys to the
 <Plug>CamelCaseMotion_? mapping targets _before_ sourcing this script (e.g. in
-your|vimrc|).  
+your |vimrc|).  
 
-EXAMPLE: Replace the default|w|,|b| and|e| mappings instead of defining
-additional mappings|,w|,|,b| and|,e|: >
+EXAMPLE: Replace the default |w|, |b| and |e| mappings instead of defining
+additional mappings |,w|, |,b| and |,e|: >
     map <silent> w <Plug>CamelCaseMotion_w
     map <silent> b <Plug>CamelCaseMotion_b
     map <silent> e <Plug>CamelCaseMotion_e
@@ -98,7 +99,7 @@ additional mappings|,w|,|,b| and|,e|: >
     sunmap b
     sunmap e
 
-EXAMPLE: Replace default|iw|text-object and define|ib|and |ie|motions: >
+EXAMPLE: Replace default |iw| text-object and define |ib| and |ie| motions: >
     omap <silent> iw <Plug>CamelCaseMotion_iw
     xmap <silent> iw <Plug>CamelCaseMotion_iw
     omap <silent> ib <Plug>CamelCaseMotion_ib
@@ -112,9 +113,9 @@ KNOWN PROBLEMS				      *camelcasemotion-known-problems*
 - A degenerate CamelCaseWord containing '\U\u\d' (e.g. "MaP1Roblem") confuses
   the operator-pending and visual mode ,e mapping if 'selection' is not set to
   "exclusive". It'll skip "P" and select "P1" in one step. As a workaround,
-  use ',w' instead of ',e'; those two mappings have the same effect inside
+  use |,w| instead of |,e|; those two mappings have the same effect inside
   CamelCaseWords, anyway. 
-- The operator-pending and visual mode ,e mapping doesn't work properly when
+- The operator-pending and visual mode |,e| mapping doesn't work properly when
   it reaches the end of the buffer; the final character of the moved-over
   "word" remains. As a workaround, use the default 'e' motion instead of ',e'. 
 - When the Vim setting 'selection' is not set to "exclusive", a
@@ -130,9 +131,9 @@ TODO							*camelcasemotion-todo*
 HISTORY						     *camelcasemotion-history*
 
 1.50	05-May-2009
-- Do not create mappings for select mode; according to|Select-mode|, printable
-  character commands should delete the selection and insert the typed
-  characters. Now using :xmap to only target visual mode. 
+- Do not create mappings for select mode; according to |Select-mode|,
+  printable character commands should delete the selection and insert the
+  typed characters. Now using :xmap to only target visual mode. 
 - Moved functions from plugin to separate autoload script. 
 - Split off documentation into separate help file. 
 
