@@ -20,21 +20,24 @@
 let s:pattern_end = ''
 " bol
 let s:pattern_end = s:pattern_end . '^\|'
-" number
+"" single char followed by whitespace
+let s:pattern_end = s:pattern_end . '\S\ze\%(\s\|$\)\|'
+ number
 let s:pattern_end = s:pattern_end . '\d\+\|'
+" ACRONYM not followed by CamelCase or number
+let s:pattern_end = s:pattern_end . '\u\+\%(\u\|\d\)\@!\|'
 " ACRONYM followed by CamelCase or number
 let s:pattern_end = s:pattern_end . '\u\+\ze\%(\u\l\|\d\)\|'
-let s:pattern_end = s:pattern_end . '\l\+\ze\%(\u\|\d\)\|'
+" end of lower case followed by upper or digit
+"let s:pattern_end = s:pattern_end . '\l\+\ze\%(\u\|\d\)\|'
 " CamelCase
 let s:pattern_end = s:pattern_end . '\u\l\+\|'
-" non-alpha or digit of at least 2 chars
-let s:pattern_end = s:pattern_end . '\%(\%(\a\|\d\)\@!\S\)\{2,}\|'
-" single char followed by whitespace
-let s:pattern_end = s:pattern_end . '\S\ze\%(\s\|$\)\|'
+" symbol of at least 2 chars
+let s:pattern_end = s:pattern_end . '[[:punct:]]\{2,}\|'
 " single char of non-keyword prefixed by whitespace
 "let s:pattern_begin = s:pattern_begin . '\%(\s\|$\)\zs\S\|'
-" alpha word
-let s:pattern_end = s:pattern_end . '\a\+\|'
+" lowercase word
+let s:pattern_end = s:pattern_end . '\l\+\|'
 " eol
 let s:pattern_end = s:pattern_end . '$'
 
@@ -47,32 +50,23 @@ let s:pattern_inclusive = '\s\s\+'
 let s:pattern_begin = ''
 " eol |
 let s:pattern_begin = s:pattern_begin . '$\|'
+" single char followed by whitespace
+let s:pattern_begin = s:pattern_begin . '\%(^\|\s\)\zs\S\ze\%(\s\|$\)\|'
 " number |
 let s:pattern_begin = s:pattern_begin . '\d\+\|'
 " ACRONYM followed by CamelCase or number |
 let s:pattern_begin = s:pattern_begin . '\u\+\zs\%(\u\l\|\d\)\|'
-" CamelCase |
-let s:pattern_begin = s:pattern_begin . '\u\l\+\|'
+" CamelCase or lowercase word |
+let s:pattern_begin = s:pattern_begin . '\a\l\+\|'
 " ACRONYM |
-let s:pattern_begin = s:pattern_begin . '\u\@<!\u\+\|'
-" non-alpha or digit of at least 2 chars
-let s:pattern_begin = s:pattern_begin . '\%(\%(\a\|\d\)\@!\S\)\{2,}\|'
-" single char followed by whitespace
-let s:pattern_begin = s:pattern_begin . '\S\ze\%(\s\|$\)\|'
+let s:pattern_begin = s:pattern_begin . '\u\+\|'
+" symbol of at least 2 chars
+let s:pattern_begin = s:pattern_begin . '[[:punct:]]\{2,}\|'
 " single char of non-keyword prefixed by whitespace
 "let s:pattern_begin = s:pattern_begin . '\%(\s\|$\)\zs\S\|'
 " bol (must be last)
 let s:pattern_begin = s:pattern_begin . '^'
-
-" alpha keyword
-" For some reason `asdfAasdf = [X]` backwards doesn't work if this pattern is above
-" why does this take precendence? even if I put it at the end?
-let s:pattern_begin2 = '\a\+'
-
-" long stretches of whitespaces
-" This is a separate inclusive pattern for the edge case
-" when the cursor is at the bol and there is two whitespaces before a work/keyword
-let s:pattern_inclusive_begin = '\s\s\+'
+"echom s:pattern_begin
 
 "- functions ------------------------------------------------------------------"
 function! s:GetClosest(direction, line1, col1, line2, col2)
@@ -157,8 +151,6 @@ function! s:Move( direction, count, mode )
 	    " would be to replace \d\+ with \D\%#\zs\d\+, but that one is more
 	    " complex.) All other branches are not affected, because they match
 	    " multiple characters and not the same character multiple times. 
-        let [l:line2, l:col2] = searchpos(s:pattern_begin2, 'Wn' . l:direction )
-        let [l:line1, l:col1] = s:GetClosest(l:direction, l:line1, l:col1, l:line2, l:col2)
         let [l:line2, l:col2] = searchpos(s:pattern_inclusive, 'Wnc' . l:direction )
         let [l:line1, l:col1] = s:GetClosest(l:direction, l:line1, l:col1, l:line2, l:col2)
 	endif
