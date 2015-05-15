@@ -45,8 +45,8 @@ let s:pattern_inclusive = '\s\s\+'
 
 " beginning of ...
 let s:pattern_begin = ''
-" bol |
-let s:pattern_begin = s:pattern_begin . '^\|'
+" eol |
+let s:pattern_begin = s:pattern_begin . '$\|'
 " number |
 let s:pattern_begin = s:pattern_begin . '\d\+\|'
 " ACRONYM followed by CamelCase or number |
@@ -63,8 +63,8 @@ let s:pattern_begin = s:pattern_begin . '\S\ze\%(\s\|$\)\|'
 "let s:pattern_begin = s:pattern_begin . '\%(\s\|$\)\zs\S\|'
 " alpha keyword
 let s:pattern_begin = s:pattern_begin . '\a\+\|'
-" eol
-let s:pattern_begin = s:pattern_begin . '$'
+" bol (must be last)
+let s:pattern_begin = s:pattern_begin . '^'
 
 
 " long stretches of whitespaces
