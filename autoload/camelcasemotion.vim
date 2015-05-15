@@ -65,6 +65,8 @@ let s:pattern_begin = s:pattern_begin . '[[:punct:]]\{2,}\|'
 " single char of non-keyword prefixed by whitespace
 "let s:pattern_begin = s:pattern_begin . '\%(\s\|$\)\zs\S\|'
 " bol (must be last)
+" lowercase after a blank or punctuation
+let s:pattern_begin = s:pattern_begin . '\%([[:punct:][:blank:]]\|^\)\zs\a\|'
 let s:pattern_begin = s:pattern_begin . '^'
 "echom s:pattern_begin
 
