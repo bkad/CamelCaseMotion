@@ -61,11 +61,13 @@ let s:pattern_begin = s:pattern_begin . '\%(\%(\a\|\d\)\@!\S\)\{2,}\|'
 let s:pattern_begin = s:pattern_begin . '\S\ze\%(\s\|$\)\|'
 " single char of non-keyword prefixed by whitespace
 "let s:pattern_begin = s:pattern_begin . '\%(\s\|$\)\zs\S\|'
-" alpha keyword
-let s:pattern_begin = s:pattern_begin . '\a\+\|'
 " bol (must be last)
 let s:pattern_begin = s:pattern_begin . '^'
 
+" alpha keyword
+" For some reason `asdfAasdf = [X]` backwards doesn't work if this pattern is above
+" why does this take precendence? even if I put it at the end?
+let s:pattern_begin2 = '\a\+'
 
 " long stretches of whitespaces
 " This is a separate inclusive pattern for the edge case
@@ -155,6 +157,8 @@ function! s:Move( direction, count, mode )
 	    " would be to replace \d\+ with \D\%#\zs\d\+, but that one is more
 	    " complex.) All other branches are not affected, because they match
 	    " multiple characters and not the same character multiple times. 
+        let [l:line2, l:col2] = searchpos(s:pattern_begin2, 'Wn' . l:direction )
+        let [l:line1, l:col1] = s:GetClosest(l:direction, l:line1, l:col1, l:line2, l:col2)
         let [l:line2, l:col2] = searchpos(s:pattern_inclusive, 'Wnc' . l:direction )
         let [l:line1, l:col1] = s:GetClosest(l:direction, l:line1, l:col1, l:line2, l:col2)
 	endif
