@@ -237,7 +237,7 @@ function! camelcasemotion#InnerMotion( direction, count )
     else
 	call camelcasemotion#Motion( 'b', 1, 'n' )
 	normal! v
-	call camelcasemotion#Motion( a:direction, a:count, 'iv' )
+	call camelcasemotion#Motion( 'e', a:count, 'iv' )
     endif
 endfunction
 
