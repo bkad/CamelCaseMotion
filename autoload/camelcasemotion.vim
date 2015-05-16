@@ -17,57 +17,53 @@
 "   				file creation
 
 " end of ...
-let s:pattern_end = ''
 " bol
-let s:pattern_end = s:pattern_end . '^\|'
-"" single char followed by whitespace
-let s:pattern_end = s:pattern_end . '\S\ze\%(\s\|$\)\|'
- number
-let s:pattern_end = s:pattern_end . '\d\+\|'
-" ACRONYM not followed by CamelCase or number
-let s:pattern_end = s:pattern_end . '\u\+\%(\u\|\d\)\@!\|'
-" ACRONYM followed by CamelCase or number
-let s:pattern_end = s:pattern_end . '\u\+\ze\%(\u\l\|\d\)\|'
-" end of lower case followed by upper or digit
-"let s:pattern_end = s:pattern_end . '\l\+\ze\%(\u\|\d\)\|'
-" CamelCase
-let s:pattern_end = s:pattern_end . '\u\l\+\|'
-" symbol of at least 2 chars
-let s:pattern_end = s:pattern_end . '[[:punct:]]\{2,}\|'
-" single char of non-keyword prefixed by whitespace
-"let s:pattern_begin = s:pattern_begin . '\%(\s\|$\)\zs\S\|'
-" lowercase word
-let s:pattern_end = s:pattern_end . '\l\+\|'
+let s:pattern_end = '^'
 " eol
-let s:pattern_end = s:pattern_end . '$'
+let s:pattern_end .= '\|$'
+" Anything followed by whitespace
+" let s:pattern_end .= '\|\S\%(\s\|$\)\@='
+"  number
+let s:pattern_end .= '\|\d\+'
+" ACRONYM followed by CamelCase or number
+let s:pattern_end .= '\|\u\%(\u\l\)\@='
+" ACRONYM followed by non alpha
+let s:pattern_end .= '\|\u\%(\a\)\@!'
+" lower case followed by non lower-case (this also takes care of CamelCase)
+let s:pattern_end .= '\|\l\%(\l\)\@!'
+" symbol of at least 2 chars
+let s:pattern_end .= '\|[[:punct:]]\{2,}'
+" single char of non-keyword prefixed by whitespace
+"let s:pattern_begin .= '\%(\s\|$\)\zs\S'
 
-" long stretches of whitespaces
-" This is a separate inclusive pattern for the edge case
-" when the cursor is at the bol and there is two whitespaces before a work/keyword
-let s:pattern_inclusive = '\s\s\+'
+" long stretches of whitespaces.
+" This is useful for indents and trailing whitespaces.
+" This is a separate inclusive pattern for the edge case,
+" when the cursor is at the bol and there is two whitespaces before a word/keyword
+let s:pattern_inclusive = '\s\s\{2,}'
 
 " beginning of ...
-let s:pattern_begin = ''
+" bol
+let s:pattern_begin = '^'
 " eol |
-let s:pattern_begin = s:pattern_begin . '$\|'
+let s:pattern_begin .= '\|$'
 " single char followed by whitespace
-let s:pattern_begin = s:pattern_begin . '\%(^\|\s\)\zs\S\ze\%(\s\|$\)\|'
+let s:pattern_begin .= '\|\%(^\|\s\)\zs\S\ze\%(\s\|$\)'
 " number |
-let s:pattern_begin = s:pattern_begin . '\d\+\|'
-" ACRONYM followed by CamelCase or number |
-let s:pattern_begin = s:pattern_begin . '\u\+\zs\%(\u\l\|\d\)\|'
-" CamelCase or lowercase word |
-let s:pattern_begin = s:pattern_begin . '\a\l\+\|'
+let s:pattern_begin .= '\|\d\+'
+" CamelCase (May be after an acronymn)
+let s:pattern_begin .= '\|\u\l'
 " ACRONYM |
-let s:pattern_begin = s:pattern_begin . '\u\+\|'
+" First uppercase : edge case of ACRONYM[B]efore to avoid matching at cursor
+let s:pattern_begin .= '\|\u\@<!\u'
 " symbol of at least 2 chars
-let s:pattern_begin = s:pattern_begin . '[[:punct:]]\{2,}\|'
-" single char of non-keyword prefixed by whitespace
-"let s:pattern_begin = s:pattern_begin . '\%(\s\|$\)\zs\S\|'
-" bol (must be last)
-" lowercase after a blank or punctuation
-let s:pattern_begin = s:pattern_begin . '\%([[:punct:][:blank:]]\|^\)\zs\a\|'
-let s:pattern_begin = s:pattern_begin . '^'
+let s:pattern_begin .= '\|[[:punct:]]\{2,}'
+" lowercase after a nonalpha, ie not in Camel
+"let s:pattern_begin .= '\|[[:punct:][:blank:]]\zs\a'
+let s:pattern_begin .= '\|\a\@<!\l'
+" anything prefixed by whitespace
+"let s:pattern_begin .= '\|\%(\s\|$\)\zs\S'
+let s:pattern_begin .= '\|\S\@<!\S'
 "echom s:pattern_begin
 
 "- functions ------------------------------------------------------------------"
