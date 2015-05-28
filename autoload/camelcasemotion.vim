@@ -16,7 +16,77 @@
 "				script. 
 "   				file creation
 
+" end of ...
+" bol
+let s:pattern_end = '^'
+" eol
+let s:pattern_end .= '\|$'
+" Anything followed by whitespace
+" let s:pattern_end .= '\|\S\%(\s\|$\)\@='
+"  number
+let s:pattern_end .= '\|\d\+'
+" ACRONYM followed by CamelCase or number
+let s:pattern_end .= '\|\u\%(\u\l\)\@='
+" ACRONYM followed by non alpha
+let s:pattern_end .= '\|\u\%(\a\)\@!'
+" lower case followed by non lower-case (this also takes care of CamelCase)
+let s:pattern_end .= '\|\l\%(\l\)\@!'
+" symbol of at least 2 chars
+let s:pattern_end .= '\|[[:punct:]]\{2,}'
+" single char of non-keyword prefixed by whitespace
+"let s:pattern_begin .= '\%(\s\|$\)\zs\S'
+
+" long stretches of whitespaces.
+" This is useful for indents and trailing whitespaces.
+" This is a separate inclusive pattern for the edge case,
+" when the cursor is at the bol and there is two whitespaces before a word/keyword
+let s:pattern_inclusive = '\s\s\{2,}'
+
+" beginning of ...
+" bol
+let s:pattern_begin = '^'
+" eol |
+let s:pattern_begin .= '\|$'
+" single char followed by whitespace
+let s:pattern_begin .= '\|\%(^\|\s\)\zs\S\ze\%(\s\|$\)'
+" number |
+let s:pattern_begin .= '\|\d\+'
+" CamelCase (May be after an acronymn)
+let s:pattern_begin .= '\|\u\l'
+" ACRONYM |
+" First uppercase : edge case of ACRONYM[B]efore to avoid matching at cursor
+let s:pattern_begin .= '\|\u\@<!\u'
+" symbol of at least 2 chars
+let s:pattern_begin .= '\|[[:punct:]]\{2,}'
+" lowercase after a nonalpha, ie not in Camel
+"let s:pattern_begin .= '\|[[:punct:][:blank:]]\zs\a'
+let s:pattern_begin .= '\|\a\@<!\l'
+" anything prefixed by whitespace
+"let s:pattern_begin .= '\|\%(\s\|$\)\zs\S'
+let s:pattern_begin .= '\|\S\@<!\S'
+"echom s:pattern_begin
+
 "- functions ------------------------------------------------------------------"
+function! s:GetClosest(direction, line1, col1, line2, col2)
+    let l:line0 = line('.')
+    let l:col0 = col('.')
+
+    "echom  l:line0 . ":" .  l:col0 . " " . a:line1 . ":" .  a:col1 . " " . a:line2 . ":" .  a:col2
+    " if line2/col2 has actually moved from ther cursor
+    if [a:line2, a:col2] != [0, 0] && (a:col2 != l:col0 || a:line2 != l:line0)
+        if a:direction == ''
+            if a:line2 < a:line1 || (a:col2 < a:col1 && a:line2 == a:line1)
+                return [a:line2, a:col2]
+            endif
+        else
+            if a:line2 > a:line1 || (a:col2 > a:col1 && a:line2 == a:line1)
+                return [a:line2, a:col2]
+            endif
+        endif
+    endif
+    return [a:line1, a:col1]
+endfunction
+
 function! s:Move( direction, count, mode )
     " Note: There is no inversion of the regular expression character class
     " 'keyword character' (\k). We need an inversion "non-keyword" defined as
@@ -27,16 +97,19 @@ function! s:Move( direction, count, mode )
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
-	if a:direction == 'e'
+	if a:direction == 'e' || a:direction == 'ge'
+	    let l:direction = (a:direction == 'e' ? '' : 'b')
 	    " "Forward to end" motion. 
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
-	    " end of ...
-	    " number | ACRONYM followed by CamelCase or number | CamelCase | underscore_notation | non-keyword | word
-	    call search( '\m\d\+\|\u\+\ze\%(\u\l\|\d\)\|\l\+\ze\%(\u\|\d\)\|\u\l\+\|\%(\a\|\d\)\+\ze[-_]\|\%(\k\@!\S\)\+\|\%([-_]\@!\k\)\+\>', 'We' )
+	    let [l:line1, l:col1] = searchpos(s:pattern_end, 'Wen' . l:direction )
 	    " Note: word must be defined as '\k\>'; '\>' on its own somehow
 	    " dominates over the previous branch. Plus, \k must exclude the
 	    " underscore, or a trailing one will be incorrectly moved over:
-	    " '\%(_\@!\k\)'. 
+	    " '\%(_\@!\k\)'.
+
+        let [l:line2, l:col2] = searchpos(s:pattern_inclusive, 'Wenc' . l:direction )
+        let [l:line1, l:col1] = s:GetClosest(l:direction, l:line1, l:col1, l:line2, l:col2)
+
 	    if a:mode == 'o'
 		" Note: Special additional treatment for operator-pending mode
 		" "forward to end" motion. 
@@ -54,17 +127,12 @@ function! s:Move( direction, count, mode )
 		" Without this, the motion would leave out the last character in
 		" the line. I've also experimented with temporarily setting
 		" "set virtualedit=onemore" , but that didn't work. 
-		let l:save_ww = &whichwrap
-		set whichwrap+=l
-		normal! l
-		let &whichwrap = l:save_ww
+		let l:col1 = l:col1 + 1
 	    endif
 	else
 	    " Forward (a:direction == '') and backward (a:direction == 'b')
 	    " motion. 
-
-	    let l:direction = (a:direction == 'w' ? '' : a:direction)
-
+	    let l:direction = (a:direction == 'w' ? '' : 'b')
 	    " CamelCase: Jump to beginning of either (start of word, Word, WORD,
 	    " 123). 
 	    " Underscore_notation: Jump to the beginning of an underscore-separated
@@ -72,9 +140,7 @@ function! s:Move( direction, count, mode )
 	    "call search( '\<\|\u', 'W' . l:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . l:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . l:direction )
-	    " beginning of ...
-	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number | lowercase folowed by capital letter or number | ACRONYM followed by CamelCase or number | CamelCase | ACRONYM | underscore followed by ACRONYM, Camel, lowercase or number
-		  call search( '\m\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\<\|\d\+\|\l\+\zs\%(\u\|\d\)\|\u\+\zs\%(\u\l\|\d\)\|\u\l\+\|\u\@<!\u\+\|[-_]\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)', 'W' . l:direction)
+	    let [l:line1, l:col1] = searchpos(s:pattern_begin, 'Wn' . l:direction )
 	    " Note: word must be defined as '\<\D' to avoid that a word like
 	    " 1234Test is moved over as [1][2]34[T]est instead of [1]234[T]est
 	    " because \< matches with zero width, and \d\+ will then start
@@ -83,7 +149,22 @@ function! s:Move( direction, count, mode )
 	    " would be to replace \d\+ with \D\%#\zs\d\+, but that one is more
 	    " complex.) All other branches are not affected, because they match
 	    " multiple characters and not the same character multiple times. 
+        let [l:line2, l:col2] = searchpos(s:pattern_inclusive, 'Wnc' . l:direction )
+        let [l:line1, l:col1] = s:GetClosest(l:direction, l:line1, l:col1, l:line2, l:col2)
 	endif
+
+    " Searching for newline returns inconsistent col unless it's the only search, so
+    " repeat it here.
+    " NB. Searching backwards for '$' with 'Wneb' will match on current cursor, use 'Wnb'
+    " NB. Searching forwards for '$' requires 'c', ie 'Wnc'
+    if l:direction == ''
+        let [l:line2, l:col2] = searchpos('$', 'Wnc')
+    else
+        let [l:line2, l:col2] = searchpos('$', 'Wnb')
+    endif
+    let [l:line1, l:col1] = s:GetClosest(l:direction, l:line1, l:col1, l:line2, l:col2)
+
+	call cursor(l:line1, l:col1)
 	let l:i = l:i + 1
     endwhile
 endfunction
@@ -97,7 +178,7 @@ function! camelcasemotion#Motion( direction, count, mode )
 "* EFFECTS / POSTCONDITIONS:
 "   Move cursor / change selection. 
 "* INPUTS:
-"   a:direction	one of 'w', 'b', 'e'
+"   a:direction	one of 'w', 'b', 'e', 'ge'
 "   a:count	number of "words" to move over
 "   a:mode	one of 'n', 'o', 'v', 'iv' (latter one is a special visual mode
 "		when inside the inner "word" text objects. 
@@ -113,13 +194,6 @@ function! camelcasemotion#Motion( direction, count, mode )
 	" normal mode motions while staying in visual mode. 
 	normal! gv
     endif
-    if a:mode == 'v' || a:mode == 'iv'
-
-	" Note_1a:
-	if &selection != 'exclusive' && a:direction == 'w'
-	    normal! l
-	endif
-    endif
 
     call s:Move( a:direction, a:count, a:mode )
 
@@ -131,15 +205,6 @@ function! camelcasemotion#Motion( direction, count, mode )
 	    " additional 'l' motion is appended to the motion; similar to the
 	    " special treatment in operator-pending mode. 
 	    normal! l
-	elseif &selection != 'exclusive' && a:direction != 'e'
-	    " Note_1b:
-	    " The forward and backward motions move to the beginning of the next "word".
-	    " When 'selection' is set to 'inclusive' or 'old', this is one character too far. 
-	    " The appended 'h' motion undoes this. Because of this backward step,
-	    " though, the forward motion finds the current "word" again, and would
-	    " be stuck on the current "word". An 'l' motion before the CamelCase
-	    " motion (see Note_1a) fixes that. 
-	    normal! h
 	endif
     endif
 endfunction
@@ -155,7 +220,7 @@ function! camelcasemotion#InnerMotion( direction, count )
     " Move "word" backwards, enter visual mode, then move "word" forward. This
     " selects the inner "word" in visual mode; the operator-pending mode takes
     " this selection as the area covered by the motion. 
-    if a:direction == 'b'
+    if a:direction == 'b' || a:direction == 'ge'
 	" Do not do the selection backwards, because the backwards "word" motion
 	" in visual mode + selection=inclusive has an off-by-one error. 
 	call camelcasemotion#Motion( 'b', a:count, 'n' )
@@ -166,7 +231,7 @@ function! camelcasemotion#InnerMotion( direction, count )
     else
 	call camelcasemotion#Motion( 'b', 1, 'n' )
 	normal! v
-	call camelcasemotion#Motion( a:direction, a:count, 'iv' )
+	call camelcasemotion#Motion( 'e', a:count, 'iv' )
     endif
 endfunction
 
