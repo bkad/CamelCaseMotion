@@ -128,9 +128,11 @@ additional mappings '<leader>w', '<leader>b' and '<leader>e'::
     map <silent> w <Plug>CamelCaseMotion_w
     map <silent> b <Plug>CamelCaseMotion_b
     map <silent> e <Plug>CamelCaseMotion_e
+    map <silent> ge <Plug>CamelCaseMotion_e
     sunmap w
     sunmap b
     sunmap e
+    sunmap ge
 
 **Example**: Replace default 'iw' text-object and define 'ib' and 'ie'
 motions::
