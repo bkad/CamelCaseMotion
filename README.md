@@ -9,19 +9,19 @@ Vim provides many built-in motions, e.g. to move to the next word, or end of
 the current word. Most programming languages use either CamelCase
 ("anIdentifier") or underscore_notation ("an_identifier") naming conventions
 for identifiers. The best way to navigate inside those identifiers using Vim
-built-in motions is the [count]f{char} motion, i.e. f{uppercase-char} or f\_,
+built-in motions is the [count]f{char} motion, i.e. f{uppercase-char} or f_,
 respectively. But we can make this easier:
 
-This script defines motions similar to 'w', 'b', 'e' which do not move
+This script defines motions similar to `w`, `b`, `e` which do not move
 word-wise (forward/backward), but Camel-wise; i.e. to word boundaries and
 uppercase letters. The motions also work on underscore notation, where words
 are delimited by underscore ('_') characters. From here on, both CamelCase
 and underscore_notation entities are referred to as "words" (in double quotes).
 Just like with the regular motions, a [count] can be prepended to move over
 multiple "words" at once. Outside of "words" (e.g. in non-keyword characters
-like // or ;), the new motions move just like the regular motions.
+like / or ;), the new motions move just like the regular motions.
 
-Vim provides a built-in 'iw' text object called 'inner word', which works in
+Vim provides a built-in `iw` text object called 'inner word', which works in
 operator-pending and visual mode. Analog to that, this script defines inner
 "word" motions which select the "word" (or multiple "words" if a [count] is
 given) where the cursor is located.
@@ -61,14 +61,14 @@ omap <silent> ie <Plug>CamelCaseMotion_ie
 xmap <silent> ie <Plug>CamelCaseMotion_ie
 ```
 
-Most commonly motions are '<leader>w', '<leader>b' and '<leader>e', all of which can
+Most commonly motions are `<leader>w`, `<leader>b` and `<leader>e`, all of which can
 be used in normal mode, operator-pending mode (cp. `:help operator`), and visual
-mode. For example, type 'bc<leader>w' to change 'Camel' in 'CamelCase' to
+mode. For example, type `bc<leader>w` to change 'Camel' in 'CamelCase' to
 something else.
 
 The `<leader>` string is defined with the `mapleader` variable in vim, and
-defaults to the backslash character (`\\`). Therefore, the motions defined by
-this plugin would resolve to '\\w', '\\b' and '\\e'. Some vim users prefer to use
+defaults to the backslash character (`\`). Therefore, the motions defined by
+this plugin would resolve to `\w`, `\b` and `\e`. Some vim users prefer to use
 the comma key (`,`), which you may have already defined in your vimrc. To
 check your current mapleader, execute:
 
@@ -76,7 +76,7 @@ check your current mapleader, execute:
 :let mapleader
 ```
 
-If you get an error, you are still using the default (`\\`). If you wish to
+If you get an error, you are still using the default (`\`). If you wish to
 define a new mapleader, try:
 
 ```vim
@@ -123,7 +123,7 @@ Given the following identifier, with the cursor positioned at [x]:
 script_31337_path_and_na[m]e_without_extension_11
 ```
 
-v3i<leader>w selects script_31337_path_and_[name_without_extension\_]11
+v3i<leader>w selects script_31337_path_and_[name_without_extension_]11
 
 v3i<leader>b selects script_31337_[path_and_name]_without_extension_11
 
