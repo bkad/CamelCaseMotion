@@ -13,25 +13,47 @@ for identifiers. The best way to navigate inside those identifiers using Vim
 built-in motions is the [count]f{char} motion, i.e. f{uppercase-char} or f\_,
 respectively. But we can make this easier:
 
-This script defines motions '<leader>w', '<leader>b' and '<leader>e' (similar
-to 'w', 'b', 'e'), which do not move word-wise (forward/backward), but
-Camel-wise; i.e. to word boundaries and uppercase letters. The motions also
-work on underscore notation, where words are delimited by underscore ('_')
-characters. From here on, both CamelCase and underscore_notation entities are
-referred to as "words" (in double quotes). Just like with the regular motions,
-a [count] can be prepended to move over multiple "words" at once. Outside of
-"words" (e.g. in non-keyword characters like // or ;), the new motions move
-just like the regular motions.
+This script defines motions similar to 'w', 'b', 'e' which do not move
+word-wise (forward/backward), but Camel-wise; i.e. to word boundaries and
+uppercase letters. The motions also work on underscore notation, where words
+are delimited by underscore ('_') characters. From here on, both CamelCase
+and underscore_notation entities are referred to as "words" (in double quotes).
+Just like with the regular motions, a [count] can be prepended to move over
+multiple "words" at once. Outside of "words" (e.g. in non-keyword characters
+like // or ;), the new motions move just like the regular motions.
 
 Vim provides a built-in 'iw' text object called 'inner word', which works in
 operator-pending and visual mode. Analog to that, this script defines inner
-"word" motions 'i<leader>w', 'i<leader>b' and 'i<leader>e', which select the
-"word" (or multiple "words" if a [count] is given) where the cursor is located.
+"word" motions which select the "word" (or multiple "words" if a [count] is
+given) where the cursor is located.
 
 Usage
 ======
+To use the default mappings, add the following to your vimrc::
+    camelcasemotion#CreateMotionMappings('<leader>')
 
-The new motions are '<leader>w', '<leader>b' and '<leader>e', all of which can
+If you want to use different mappings, map your keys to the
+<Plug>CamelCaseMotion_? mapping targets your vimrc).
+
+EXAMPLE: Map to w, b and e mappings::
+    map <silent> w <Plug>CamelCaseMotion_w
+    map <silent> b <Plug>CamelCaseMotion_b
+    map <silent> e <Plug>CamelCaseMotion_e
+    map <silent> ge <Plug>CamelCaseMotion_ge
+    sunmap w
+    sunmap b
+    sunmap e
+    sunmap ge
+
+EXAMPLE: Map iw, ib and ie motions::
+    omap <silent> iw <Plug>CamelCaseMotion_iw
+    xmap <silent> iw <Plug>CamelCaseMotion_iw
+    omap <silent> ib <Plug>CamelCaseMotion_ib
+    xmap <silent> ib <Plug>CamelCaseMotion_ib
+    omap <silent> ie <Plug>CamelCaseMotion_ie
+    xmap <silent> ie <Plug>CamelCaseMotion_ie
+
+Most commonly motions are '<leader>w', '<leader>b' and '<leader>e', all of which can
 be used in normal mode, operator-pending mode (cp.  :help operator), and visual
 mode. For example, type 'bc<leader>w' to change 'Camel' in 'CamelCase' to
 something else.
@@ -109,37 +131,3 @@ To uninstall, use the ``:RmVimball`` command.
 **Dependencies**
 
 Requires Vim 7.0 or higher.
-
-**Configuration**
-
-If you want to use different mappings, map your keys to the
-``<Plug>CamelCaseMotion_?`` mapping targets _before_ sourcing this script (e.g. in
-your .vimrc).
-
-**Example**: Use 'W', 'B' and 'E'::
-
-    map <S-W> <Plug>CamelCaseMotion_w
-    map <S-B> <Plug>CamelCaseMotion_b
-    map <S-E> <Plug>CamelCaseMotion_e
-
-**Example**: Replace the default 'w', 'b' and 'e' mappings instead of defining
-additional mappings '<leader>w', '<leader>b' and '<leader>e'::
-
-    map <silent> w <Plug>CamelCaseMotion_w
-    map <silent> b <Plug>CamelCaseMotion_b
-    map <silent> e <Plug>CamelCaseMotion_e
-    map <silent> ge <Plug>CamelCaseMotion_e
-    sunmap w
-    sunmap b
-    sunmap e
-    sunmap ge
-
-**Example**: Replace default 'iw' text-object and define 'ib' and 'ie'
-motions::
-
-    omap <silent> iw <Plug>CamelCaseMotion_iw
-    xmap <silent> iw <Plug>CamelCaseMotion_iw
-    omap <silent> ib <Plug>CamelCaseMotion_ib
-    xmap <silent> ib <Plug>CamelCaseMotion_ib
-    omap <silent> ie <Plug>CamelCaseMotion_ie
-    xmap <silent> ie <Plug>CamelCaseMotion_ie

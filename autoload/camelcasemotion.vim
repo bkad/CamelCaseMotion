@@ -17,7 +17,7 @@
 "           file creation
 
 "- functions ------------------------------------------------------------------"
-function! s:Move( direction, count, mode )
+function! s:Move(direction, count, mode)
   " Note: There is no inversion of the regular expression character class
   " 'keyword character' (\k). We need an inversion "non-keyword" defined as
   " "any non-whitespace character that is not a keyword character" (e.g.
@@ -64,14 +64,6 @@ function! s:Move( direction, count, mode )
 
       let l:direction = (a:direction == 'w' ? '' : a:direction)
 
-      " CamelCase: Jump to beginning of either (start of word, Word, WORD,
-      " 123).
-      " Underscore_notation: Jump to the beginning of an underscore-separated
-      " word or number.
-      "call search( '\<\|\u', 'W' . l:direction )
-      "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . l:direction )
-      "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . l:direction )
-      " beginning of ...
       " word | empty line | non-keyword after whitespaces | non-whitespace after word | number | lowercase folowed by capital letter or number | ACRONYM followed by CamelCase or number | CamelCase | ACRONYM | underscore followed by ACRONYM, Camel, lowercase or number
       call search( '\m\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\<\|\d\+\|\l\+\zs\%(\u\|\d\)\|\u\+\zs\%(\u\l\|\d\)\|\u\l\+\|\u\@<!\u\+\|[-_]\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)', 'W' . l:direction)
       " Note: word must be defined as '\<\D' to avoid that a word like
@@ -87,7 +79,7 @@ function! s:Move( direction, count, mode )
   endwhile
 endfunction
 
-function! camelcasemotion#Motion( direction, count, mode )
+function! camelcasemotion#Motion(direction, count, mode)
   "*******************************************************************************
   "* PURPOSE:
   "   Perform the motion over CamelCaseWords or underscore_notation.
@@ -119,7 +111,7 @@ function! camelcasemotion#Motion( direction, count, mode )
     endif
   endif
 
-  call s:Move( a:direction, a:count, a:mode )
+  call s:Move(a:direction, a:count, a:mode)
 
   if a:mode == 'v' || a:mode == 'iv'
     " Note: 'selection' setting.
@@ -142,7 +134,7 @@ function! camelcasemotion#Motion( direction, count, mode )
   endif
 endfunction
 
-function! camelcasemotion#InnerMotion( direction, count )
+function! camelcasemotion#InnerMotion(direction, count)
   " If the cursor is positioned on the first character of a CamelWord, the
   " backward motion would move to the previous word, which would result in a
   " wrong selection. To fix this, first move the cursor to the right, so that
@@ -156,16 +148,39 @@ function! camelcasemotion#InnerMotion( direction, count )
   if a:direction == 'b'
     " Do not do the selection backwards, because the backwards "word" motion
     " in visual mode + selection=inclusive has an off-by-one error.
-    call camelcasemotion#Motion( 'b', a:count, 'n' )
+    call camelcasemotion#Motion('b', a:count, 'n')
     normal! v
     " We decree that 'b' is the opposite of 'e', not 'w'. This makes more
     " sense at the end of a line and for underscore_notation.
-    call camelcasemotion#Motion( 'e', a:count, 'iv' )
+    call camelcasemotion#Motion('e', a:count, 'iv')
   else
-    call camelcasemotion#Motion( 'b', 1, 'n' )
+    call camelcasemotion#Motion('b', 1, 'n')
     normal! v
     call camelcasemotion#Motion(a:direction, a:count, 'iv')
   endif
+endfunction
+
+
+function! camelcasemotion#CreateMotionMappings(leader)
+  " Create mappings according to this template:
+  " (* stands for the mode [nov], ? for the underlying motion [wbe].)
+  for l:mode in ['n', 'o', 'v']
+    for l:motion in ['w', 'b', 'e', 'ge']
+      let l:targetMapping = '<Plug>CamelCaseMotion_' . l:motion
+      execute (l:mode ==# 'v' ? 'x' : l:mode) .
+            \ 'map <silent> ' . a:leader . l:motion . ' ' . l:targetMapping
+    endfor
+  endfor
+
+  " Create mappings according to this template:
+  " (* stands for the mode [ov], ? for the underlying motion [wbe].)
+  for l:mode in ['o', 'v']
+    for l:motion in ['w', 'b', 'e', 'ge']
+      let l:targetMapping = '<Plug>CamelCaseMotion_i' . l:motion
+      execute (l:mode ==# 'v' ? 'x' : l:mode) .
+            \ 'map <silent> i' . a:leader . l:motion . ' ' . l:targetMapping
+    endfor
+  endfor
 endfunction
 
 " vim: set sts=2 sw=2 expandtab ff=unix fdm=syntax :

@@ -146,26 +146,13 @@ let g:loaded_camelcasemotion = 1
 " We do not provide the fourth "backward to end" motion (,E), because it is
 " seldomly used.
 
-function! s:CreateMotionMappings()
-  " Create mappings according to this template:
-  " (* stands for the mode [nov], ? for the underlying motion [wbe].)
-  "
-  " *noremap <Plug>CamelCaseMotion_? :<C-U>call camelcasemotion#Motion('?',v:count1,'*')<CR>
-  " if ! hasmapto('<Plug>CamelCaseMotion_?', '*')
-  "    *map <silent> ,? <Plug>CamelCaseMotion_?
-  " endif
-
-  for l:mode in ['n', 'o', 'v']
-    for l:motion in ['w', 'b', 'e', 'ge']
-      let l:targetMapping = '<Plug>CamelCaseMotion_' . l:motion
-      execute l:mode . 'noremap <silent> ' . l:targetMapping . ' :<C-U>call camelcasemotion#Motion(''' . l:motion . ''',v:count1,''' . l:mode . ''')<CR>'
-
-      if ! hasmapto(l:targetMapping, l:mode)
-        execute (l:mode ==# 'v' ? 'x' : l:mode) . 'map <silent> <leader>' . l:motion . ' ' . l:targetMapping
-      endif
-    endfor
+for s:mode in ['n', 'o', 'v']
+  for s:motion in ['w', 'b', 'e', 'ge']
+    let s:targetMapping = '<Plug>CamelCaseMotion_' . s:motion
+    execute s:mode . 'noremap <silent> ' . s:targetMapping .
+          \ ' :<C-U>call camelcasemotion#Motion(''' . s:motion . ''',v:count1,''' . s:mode . ''')<CR>'
   endfor
-endfunction
+endfor
 
 " To create a text motion, a mapping for operator-pending mode needs to be
 " defined. This mapping should move the cursor according to the implemented
@@ -177,30 +164,13 @@ endfunction
 " different behavior depending on whether visual mode has just been entered or
 " whether text has already been selected.
 " We deviate from that and always override the existing selection.
-function! s:CreateInnerMotionMappings()
-  " Create mappings according to this template:
-  " (* stands for the mode [ov], ? for the underlying motion [wbe].)
-  "
-  " *noremap <Plug>CamelCaseMotion_i? :<C-U>call camelcasemotion#InnerMotion('?',v:count1)<CR>
-  " if ! hasmapto('<Plug>CamelCaseInnerMotion_i?', '*')
-  "    *map <silent> i,? <Plug>CamelCaseInnerMotion_i?
-  " endif
 
-  for l:mode in ['o', 'v']
-    for l:motion in ['w', 'b', 'e', 'ge']
-      let l:targetMapping = '<Plug>CamelCaseMotion_i' . l:motion
-      execute l:mode . 'noremap <silent> ' . l:targetMapping . ' :<C-U>call camelcasemotion#InnerMotion(''' . l:motion . ''',v:count1)<CR>'
-      if ! hasmapto(l:targetMapping, l:mode)
-        execute (l:mode ==# 'v' ? 'x' : l:mode) . 'map <silent> i<leader>' . l:motion . ' ' . l:targetMapping
-      endif
-    endfor
+for s:mode in ['o', 'v']
+  for s:motion in ['w', 'b', 'e', 'ge']
+    let s:targetMapping = '<Plug>CamelCaseMotion_i' . s:motion
+    execute s:mode . 'noremap <silent> ' . s:targetMapping .
+          \ ' :<C-U>call camelcasemotion#InnerMotion(''' . s:motion . ''',v:count1)<CR>'
   endfor
-endfunction
-
-call s:CreateMotionMappings()
-call s:CreateInnerMotionMappings()
-
-delfunction s:CreateMotionMappings
-delfunction s:CreateInnerMotionMappings
+endfor
 
 " vim: set sts=2 sw=2 expandtab ff=unix fdm=syntax :
