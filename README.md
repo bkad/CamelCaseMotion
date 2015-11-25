@@ -31,7 +31,7 @@ Usage
 To use the default mappings, add the following to your vimrc:
 
 ```vim
-camelcasemotion#CreateMotionMappings('<leader>')
+call camelcasemotion#CreateMotionMappings('<leader>')
 ```
 
 If you want to use different mappings, map your keys to the
