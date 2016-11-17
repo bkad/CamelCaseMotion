@@ -121,7 +121,9 @@ function! camelcasemotion#Motion(direction, count, mode)
       " additional 'l' motion is appended to the motion; similar to the
       " special treatment in operator-pending mode.
       normal! l
-    elseif &selection != 'exclusive' && a:direction != 'e' && a:direction == 'ge'
+    elseif &selection != 'exclusive' && (
+          \ (a:direction != 'e' && a:direction == 'ge')
+          \ || (a:mode == 'iv' && a:direction == 'w'))
       " Note_1b:
       " The forward and backward motions move to the beginning of the next "word".
       " When 'selection' is set to 'inclusive' or 'old', this is one character too far.
@@ -129,6 +131,13 @@ function! camelcasemotion#Motion(direction, count, mode)
       " though, the forward motion finds the current "word" again, and would
       " be stuck on the current "word". An 'l' motion before the CamelCase
       " motion (see Note_1a) fixes that.
+      " Note_1c:
+      " A similar problem applies when selecting a whole inner "word": the
+      " cursor moves to the beginning of the next "word" which for an
+      " inclusive selection, at least in operator-pending mode, leads to
+      " counter-intuitive results. (See github issues #28 and #31.) The
+      " appended 'h' is needed in that case as well. Possibly for 'v' mode
+      " too.
       normal! h
     endif
   endif
