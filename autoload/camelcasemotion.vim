@@ -17,6 +17,30 @@
 "           file creation
 
 "- functions ------------------------------------------------------------------"
+
+let s:forward_to_end_list = []
+call add(s:forward_to_end_list, '\m\d\+')                  " number
+call add(s:forward_to_end_list, '\u\+\ze\%(\u\l\|\d\)')    " ALLCAPS followed by CamelCase or number
+call add(s:forward_to_end_list, '\l\+\ze\%(\u\|\d\)')      " lowercase followed by ALLCAPS
+call add(s:forward_to_end_list, '\u\l\+')                  " CamelCase
+call add(s:forward_to_end_list, '\%(\a\|\d\)\+\ze[-_]')    " underscore_notation
+call add(s:forward_to_end_list, '\%(\k\@!\S\)\+')          " non-keyword
+call add(s:forward_to_end_list, '\%([-_]\@!\k\)\+\>')      " word
+let s:forward_to_end = join(s:forward_to_end_list, '\|')
+
+let s:forward_to_next_list = []
+call add(s:forward_to_next_list, '\m\<\D')                                " word
+call add(s:forward_to_next_list, '^$')                                    " empty line
+call add(s:forward_to_next_list, '\%(^\|\s\)\+\zs\k\@!\S')                " non-keyword after whitespaces
+call add(s:forward_to_next_list, '\>\<')                                  " non-whitespace after word
+call add(s:forward_to_next_list, '\d\+')                                  " number
+call add(s:forward_to_next_list, '\l\+\zs\%(\u\|\d\)')                    " lowercase followed by capital letter or number
+call add(s:forward_to_next_list, '\u\+\zs\%(\u\l\|\d\)')                  " ALLCAPS followed by CamelCase or number
+call add(s:forward_to_next_list, '\u\l\+')                                " CamelCase
+call add(s:forward_to_next_list, '\u\@<!\u\+')                            " ALLCAPS
+call add(s:forward_to_next_list, '[-_]\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)')  " underscored followed by ALLCAPS, CamelCase, lowercase, or number
+let s:forward_to_next = join(s:forward_to_next_list, '\|')
+
 function! s:Move(direction, count, mode)
   " Note: There is no inversion of the regular expression character class
   " 'keyword character' (\k). We need an inversion "non-keyword" defined as
@@ -31,7 +55,7 @@ function! s:Move(direction, count, mode)
       " "Forward to end" motion.
       " number | ACRONYM followed by CamelCase or number | CamelCase | underscore_notation | non-keyword | word
       let l:direction = (a:direction == 'e' ? a:direction : 'be')
-      call search('\m\d\+\|\u\+\ze\%(\u\l\|\d\)\|\l\+\ze\%(\u\|\d\)\|\u\l\+\|\%(\a\|\d\)\+\ze[-_]\|\%(\k\@!\S\)\+\|\%([-_]\@!\k\)\+\>', 'W' . l:direction)
+      call search(s:forward_to_end, 'W' . l:direction)
       " Note: word must be defined as '\k\>'; '\>' on its own somehow
       " dominates over the previous branch. Plus, \k must exclude the
       " underscore, or a trailing one will be incorrectly moved over:
@@ -65,7 +89,7 @@ function! s:Move(direction, count, mode)
       let l:direction = (a:direction == 'w' ? '' : a:direction)
 
       " word | empty line | non-keyword after whitespaces | non-whitespace after word | number | lowercase folowed by capital letter or number | ACRONYM followed by CamelCase or number | CamelCase | ACRONYM | underscore followed by ACRONYM, Camel, lowercase or number
-      call search( '\m\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\<\|\d\+\|\l\+\zs\%(\u\|\d\)\|\u\+\zs\%(\u\l\|\d\)\|\u\l\+\|\u\@<!\u\+\|[-_]\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)', 'W' . l:direction)
+      call search(s:forward_to_next, 'W' . l:direction)
       " Note: word must be defined as '\<\D' to avoid that a word like
       " 1234Test is moved over as [1][2]34[T]est instead of [1]234[T]est
       " because \< matches with zero width, and \d\+ will then start
