@@ -149,3 +149,8 @@ Dependencies
 ------------
 
 Requires Vim 7.0 or higher.
+
+Related
+-------
+
+[vim-wordmotion](https://github.com/chaoren/vim-wordmotion)
