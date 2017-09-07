@@ -61,6 +61,13 @@ omap <silent> ie <Plug>CamelCaseMotion_ie
 xmap <silent> ie <Plug>CamelCaseMotion_ie
 ```
 
+EXAMPLE: Map insert mode motions:
+
+```vim
+imap <silent> <M-Left> <C-o><Plug>CamelCaseMotion_b
+imap <silent> <M-Right> <C-o><Plug>CamelCaseMotion_e
+```
+
 Most commonly motions are `<leader>w`, `<leader>b` and `<leader>e`, all of which can
 be used in normal mode, operator-pending mode (cp. `:help operator`), and visual
 mode. For example, type `bc<leader>w` to change 'Camel' in 'CamelCase' to
