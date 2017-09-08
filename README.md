@@ -64,8 +64,8 @@ xmap <silent> ie <Plug>CamelCaseMotion_ie
 EXAMPLE: Map insert mode motions:
 
 ```vim
-imap <silent> <M-Left> <C-o><Plug>CamelCaseMotion_b
-imap <silent> <M-Right> <C-o><Plug>CamelCaseMotion_e
+imap <silent> <S-Left> <C-o><Plug>CamelCaseMotion_b
+imap <silent> <S-Right> <C-o><Plug>CamelCaseMotion_w
 ```
 
 Most commonly motions are `<leader>w`, `<leader>b` and `<leader>e`, all of which can
