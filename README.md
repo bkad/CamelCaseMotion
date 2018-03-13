@@ -146,18 +146,16 @@ Based on [Moving through camel case words](http://vim.wikia.com/wiki/Moving_thro
 
 Installation
 ------------
-If you're using [Vundle](https://github.com/VundleVim/Vundle.vim),
-just add `Plugin 'bkad/CamelCaseMotion'` to your .vimrc and run `:PluginInstall`.
-
-If you're using [pathogen](https://github.com/tpope/vim-pathogen),
-add this repo to your bundle directory.
+If you are running Vim 8.0 or greater, add this repo to your packpath (See `:h packages`). Otherwise try
+[Vundle](https://github.com/VundleVim/Vundle.vim) or [pathogen](https://github.com/tpope/vim-pathogen).
 
 Dependencies
 ------------
 
 Requires Vim 7.0 or higher.
 
-Related
+Alternatives
 -------
 
-[vim-wordmotion](https://github.com/chaoren/vim-wordmotion)
+* [vim-wordmotion](https://github.com/chaoren/vim-wordmotion)
+* [vim-smartword](https://github.com/kana/vim-smartword)
