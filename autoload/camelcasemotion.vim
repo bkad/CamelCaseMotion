@@ -33,7 +33,7 @@ call add(s:forward_to_next_list, '<\D')                            " word
 call add(s:forward_to_next_list, '^$')                             " empty line
 call add(s:forward_to_next_list, '%(^|\s)+\zs\k@!\S')              " non-keyword after whitespaces
 call add(s:forward_to_next_list, '><')                             " non-whitespace after word
-call add(s:forward_to_next_list, '[\{\}\[\]\(\)\<\>\&]')           " brackets, parens, braces
+call add(s:forward_to_next_list, '[\{\}\[\]\(\)\<\>\&"'."'".']')   " brackets, parens, braces, quotes
 call add(s:forward_to_next_list, '\d+')                            " number
 call add(s:forward_to_next_list, '\l\+\zs%(\u|\d)')                " lowercase followed by capital letter or number
 call add(s:forward_to_next_list, '\u+\zs%(\u\l|\d)')               " ALLCAPS followed by CamelCase or number
