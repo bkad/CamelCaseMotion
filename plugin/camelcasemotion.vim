@@ -134,6 +134,10 @@ endif
 
 let g:loaded_camelcasemotion = 1
 
+if exists('g:camelcasemotion_leader')
+  call camelcasemotion#CreateMotionMappings(g:camelcasemotion_leader)
+endif
+
 "- mappings -------------------------------------------------------------------
 " The count is passed into the function through the special variable 'v:count1',
 " which is easier than misusing the :[range] that :call supports.

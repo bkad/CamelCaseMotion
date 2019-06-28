@@ -49,7 +49,6 @@ function! s:Move(direction, count, mode)
   " [!@#$%^&*()]). This can be specified via a non-whitespace character in
   " whose place no keyword character matches (\k\@!\S).
 
-  "echo "count is " . a:count
   let l:i = 0
   while l:i < a:count
     if a:direction == 'e' || a:direction == 'ge'
