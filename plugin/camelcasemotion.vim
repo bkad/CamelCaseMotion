@@ -134,8 +134,8 @@ endif
 
 let g:loaded_camelcasemotion = 1
 
-if exists('g:camelcasemotion_leader')
-  call camelcasemotion#CreateMotionMappings(g:camelcasemotion_leader)
+if exists('g:camelcasemotion_key')
+  call camelcasemotion#CreateMotionMappings(g:camelcasemotion_key)
 endif
 
 "- mappings -------------------------------------------------------------------
