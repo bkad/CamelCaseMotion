@@ -163,6 +163,9 @@ function! camelcasemotion#Motion(direction, count, mode)
       normal! h
     endif
   endif
+  if &foldopen =~# 'hor\|all'
+    normal! zv
+  endif
 endfunction
 
 function! camelcasemotion#InnerMotion(direction, count)
@@ -189,6 +192,9 @@ function! camelcasemotion#InnerMotion(direction, count)
     normal! v
     call camelcasemotion#Motion(a:direction, a:count, 'iv')
   endif
+  if &foldopen =~# 'hor\|all'
+    normal! zv
+  endif
 endfunction
 
 
@@ -212,6 +218,9 @@ function! camelcasemotion#CreateMotionMappings(leader)
             \ 'map <silent> i' . a:leader . l:motion . ' ' . l:targetMapping
     endfor
   endfor
+  if &foldopen =~# 'hor\|all'
+    normal! zv
+  endif
 endfunction
 
 " vim: set sts=2 sw=2 expandtab ff=unix fdm=syntax :
