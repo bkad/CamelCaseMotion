@@ -114,6 +114,10 @@ EXAMPLE: Map |iw|, |ib| and |ie| motions: >
     omap <silent> ie <Plug>CamelCaseMotion_ie
     xmap <silent> ie <Plug>CamelCaseMotion_ie
 
+You can also disable all default mappings and only define the ones you want
+setting the |g:camelcasemotion_map_keys| variable to `0`: (Default: `1`) >
+    let g:camelcasemotion_map_keys = 0
+
 ==============================================================================
 KNOWN PROBLEMS				      *camelcasemotion-known-problems*
 

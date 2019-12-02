@@ -37,6 +37,13 @@ let g:camelcasemotion_key = '<leader>'
 If you want to use different mappings, map your keys to the
 <Plug>CamelCaseMotion_? mapping targets your vimrc).
 
+You can also disable all default mappings and only define the ones you want
+setting the `g:camelcasemotion_map_keys` variable to `0`: (Default: `1`)
+
+```vim
+let g:camelcasemotion_map_keys = 0
+```
+
 EXAMPLE: Map to w, b and e mappings:
 
 ```vim
