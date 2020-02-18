@@ -42,6 +42,7 @@ call add(s:forward_to_next_list, '\u@<!\u+')                       " ALLCAPS
 call add(s:forward_to_next_list, '[\-_]\zs%(\u\+|\u\l+|\l+|\d+)')  " underscored followed by ALLCAPS, CamelCase, lowercase, or number
 call add(s:forward_to_next_list, '\,')
 call add(s:forward_to_next_list, '\n')
+call add(s:forward_to_next_list, '\s')
 let s:forward_to_next = '\v' . join(s:forward_to_next_list, '|')
 
 function! s:Move(direction, count, mode)
