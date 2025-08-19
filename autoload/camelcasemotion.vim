@@ -218,9 +218,6 @@ function! camelcasemotion#CreateMotionMappings(leader)
             \ 'map <silent> i' . a:leader . l:motion . ' ' . l:targetMapping
     endfor
   endfor
-  if &foldopen =~# 'hor\|all'
-    normal! zv
-  endif
 endfunction
 
 " vim: set sts=2 sw=2 expandtab ff=unix fdm=syntax :
