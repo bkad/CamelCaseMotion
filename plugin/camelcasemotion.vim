@@ -138,43 +138,49 @@ if exists('g:camelcasemotion_key')
   call camelcasemotion#CreateMotionMappings(g:camelcasemotion_key)
 endif
 
-"- mappings -------------------------------------------------------------------
-" The count is passed into the function through the special variable 'v:count1',
-" which is easier than misusing the :[range] that :call supports.
-" <C-U> is used to delete the unused range.
-" Another option would be to use a custom 'command! -count=1', but that doesn't
-" work with the normal mode mapping: When a count is typed before the mapping,
-" the ':' will convert a count of 3 into ':.,+2MyCommand', but ':3MyCommand'
-" would be required to use -count and <count>.
-"
-" We do not provide the fourth "backward to end" motion (,E), because it is
-" seldomly used.
+if !exists('g:camelcasemotion_map_keys')
+  let g:camelcasemotion_map_keys = 1
+endif
 
-for s:mode in ['n', 'o', 'v']
-  for s:motion in ['w', 'b', 'e', 'ge']
-    let s:targetMapping = '<Plug>CamelCaseMotion_' . s:motion
-    execute s:mode . 'noremap <silent> ' . s:targetMapping .
-          \ ' :<C-U>call camelcasemotion#Motion(''' . s:motion . ''',v:count1,''' . s:mode . ''')<CR>'
+if g:camelcasemotion_map_keys
+  "- mappings -------------------------------------------------------------------
+  " The count is passed into the function through the special variable 'v:count1',
+  " which is easier than misusing the :[range] that :call supports.
+  " <C-U> is used to delete the unused range.
+  " Another option would be to use a custom 'command! -count=1', but that doesn't
+  " work with the normal mode mapping: When a count is typed before the mapping,
+  " the ':' will convert a count of 3 into ':.,+2MyCommand', but ':3MyCommand'
+  " would be required to use -count and <count>.
+  "
+  " We do not provide the fourth "backward to end" motion (,E), because it is
+  " seldomly used.
+
+  for s:mode in ['n', 'o', 'v']
+    for s:motion in ['w', 'b', 'e', 'ge']
+      let s:targetMapping = '<Plug>CamelCaseMotion_' . s:motion
+      execute s:mode . 'noremap <silent> ' . s:targetMapping .
+            \ ' :<C-U>call camelcasemotion#Motion(''' . s:motion . ''',v:count1,''' . s:mode . ''')<CR>'
+    endfor
   endfor
-endfor
 
-" To create a text motion, a mapping for operator-pending mode needs to be
-" defined. This mapping should move the cursor according to the implemented
-" motion, or mark the covered text via a visual selection. As inner text motions
-" need to mark both to the left and right of the cursor position, the visual
-" selection needs to be used.
-"
-" Vim's built-in inner text objects also work in visual mode; they have
-" different behavior depending on whether visual mode has just been entered or
-" whether text has already been selected.
-" We deviate from that and always override the existing selection.
+  " To create a text motion, a mapping for operator-pending mode needs to be
+  " defined. This mapping should move the cursor according to the implemented
+  " motion, or mark the covered text via a visual selection. As inner text motions
+  " need to mark both to the left and right of the cursor position, the visual
+  " selection needs to be used.
+  "
+  " Vim's built-in inner text objects also work in visual mode; they have
+  " different behavior depending on whether visual mode has just been entered or
+  " whether text has already been selected.
+  " We deviate from that and always override the existing selection.
 
-for s:mode in ['o', 'v']
-  for s:motion in ['w', 'b', 'e', 'ge']
-    let s:targetMapping = '<Plug>CamelCaseMotion_i' . s:motion
-    execute s:mode . 'noremap <silent> ' . s:targetMapping .
-          \ ' :<C-U>call camelcasemotion#InnerMotion(''' . s:motion . ''',v:count1)<CR>'
+  for s:mode in ['o', 'v']
+    for s:motion in ['w', 'b', 'e', 'ge']
+      let s:targetMapping = '<Plug>CamelCaseMotion_i' . s:motion
+      execute s:mode . 'noremap <silent> ' . s:targetMapping .
+            \ ' :<C-U>call camelcasemotion#InnerMotion(''' . s:motion . ''',v:count1)<CR>'
+    endfor
   endfor
-endfor
+endif
 
 " vim: set sts=2 sw=2 expandtab ff=unix fdm=syntax :
